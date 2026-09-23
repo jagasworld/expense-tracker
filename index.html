@@ -449,74 +449,11 @@
 <script>
 const STORAGE_KEY='ledger_expense_data_v2';
 const OLD_STORAGE_KEY='ledger_expense_data_v1';
-const SCHEMA_VERSION=3;
-const DEFAULT_CATEGORIES=["Breakfast","Lunch","Snacks","Dinner","Jagadeesh","Ragini","Samyuktha","SaiTharun","Investment/Career","Subscription","FF Home Exp","GF Home Exp","Velachery","EB","Office Expenses","Amazon","Credit Card Debit","Credit Card Deposit","Travel","Cashback","Gift Given","Gift Got","CHIT","Petrol","ATM","GYM","Mutual Fund","Equity","Gold Chit","Savings"];
+const SCHEMA_VERSION=4;
+const DEFAULT_CATEGORIES=["Breakfast","Lunch","Snacks","Dinner","EB","Petrol","Rent","Maintenance","OTT","Amazon/Flipkart","Vacation"];
 const DEFAULT_ACCOUNTS=[{id:'acc_cash',name:'Cash',type:'Cash',opening:0},{id:'acc_bank',name:'Bank',type:'Bank',opening:0},{id:'acc_card',name:'Credit Card',type:'Credit Card',opening:0},{id:'acc_wallet',name:'Wallet',type:'Wallet',opening:0}];
 const DEFAULT_PAYMENTS=['Cash','UPI','Credit Card','Debit Card','Bank Transfer','Other'];
-const SEED_ENTRIES=[
-{"date":"2026-08-02","category":"Lunch","amount":1659.0},
-{"date":"2026-08-16","category":"Lunch","amount":1220.0},
-{"date":"2026-08-27","category":"Lunch","amount":183.06},
-{"date":"2026-08-04","category":"Snacks","amount":65.0},
-{"date":"2026-08-09","category":"Snacks","amount":25.0},
-{"date":"2026-08-10","category":"Snacks","amount":80.0},
-{"date":"2026-08-11","category":"Snacks","amount":40.0},
-{"date":"2026-08-12","category":"Snacks","amount":45.0},
-{"date":"2026-08-13","category":"Snacks","amount":65.0},
-{"date":"2026-08-14","category":"Snacks","amount":195.0},
-{"date":"2026-08-24","category":"Snacks","amount":40.0},
-{"date":"2026-08-26","category":"Snacks","amount":205.0},
-{"date":"2026-08-27","category":"Snacks","amount":85.0},
-{"date":"2026-08-04","category":"Dinner","amount":189.0},
-{"date":"2026-08-05","category":"Dinner","amount":256.84},
-{"date":"2026-08-06","category":"Dinner","amount":700.56},
-{"date":"2026-08-11","category":"Dinner","amount":189.0},
-{"date":"2026-08-12","category":"Dinner","amount":1414.0},
-{"date":"2026-08-20","category":"Dinner","amount":50.0},
-{"date":"2026-08-23","category":"Dinner","amount":388.0},
-{"date":"2026-08-01","category":"Jagadeesh","amount":1.38},
-{"date":"2026-08-09","category":"Jagadeesh","amount":116.82},
-{"date":"2026-08-12","category":"Jagadeesh","amount":80.0},
-{"date":"2026-08-15","category":"Jagadeesh","amount":117988.0},
-{"date":"2026-08-12","category":"Ragini","amount":80.0},
-{"date":"2026-08-20","category":"Ragini","amount":1869.0},
-{"date":"2026-08-21","category":"Ragini","amount":1416.0},
-{"date":"2026-08-22","category":"Ragini","amount":382.58},
-{"date":"2026-08-23","category":"Ragini","amount":329.33},
-{"date":"2026-08-24","category":"Ragini","amount":23120.0},
-{"date":"2026-08-01","category":"Samyuktha","amount":900.0},
-{"date":"2026-08-02","category":"Samyuktha","amount":16155.9},
-{"date":"2026-08-06","category":"Samyuktha","amount":45.0},
-{"date":"2026-08-07","category":"Samyuktha","amount":322.0},
-{"date":"2026-08-11","category":"Samyuktha","amount":102.0},
-{"date":"2026-08-12","category":"Samyuktha","amount":2025.15},
-{"date":"2026-08-14","category":"Samyuktha","amount":45.0},
-{"date":"2026-08-01","category":"FF Home Exp","amount":120.0},
-{"date":"2026-08-02","category":"FF Home Exp","amount":2316.0},
-{"date":"2026-08-04","category":"FF Home Exp","amount":3494.95},
-{"date":"2026-08-06","category":"FF Home Exp","amount":107.0},
-{"date":"2026-08-07","category":"FF Home Exp","amount":170.0},
-{"date":"2026-08-09","category":"FF Home Exp","amount":799.0},
-{"date":"2026-08-11","category":"FF Home Exp","amount":384.0},
-{"date":"2026-08-12","category":"FF Home Exp","amount":262.0},
-{"date":"2026-08-13","category":"FF Home Exp","amount":210.0},
-{"date":"2026-08-14","category":"FF Home Exp","amount":340.0},
-{"date":"2026-08-15","category":"FF Home Exp","amount":1050.0},
-{"date":"2026-08-20","category":"FF Home Exp","amount":160.0},
-{"date":"2026-08-22","category":"FF Home Exp","amount":215.0},
-{"date":"2026-08-23","category":"FF Home Exp","amount":425.0},
-{"date":"2026-08-24","category":"FF Home Exp","amount":155.0},
-{"date":"2026-08-12","category":"GF Home Exp","amount":40.0},
-{"date":"2026-08-13","category":"Travel","amount":188.0},
-{"date":"2026-08-26","category":"Travel","amount":160.0},
-{"date":"2026-08-06","category":"Gift Given","amount":70.0},
-{"date":"2026-08-13","category":"Gift Given","amount":100.0},
-{"date":"2026-08-05","category":"CHIT","amount":4833.0},
-{"date":"2026-08-06","category":"Petrol","amount":1000.0},
-{"date":"2026-08-09","category":"Petrol","amount":250.0},
-{"date":"2026-08-26","category":"Petrol","amount":228.0},
-{"date":"2026-08-28","category":"Petrol","amount":200.0}
-];
+const SEED_ENTRIES=[];
 
 function uid(){return 'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
 function todayISO(){const d=new Date();const off=d.getTimezoneOffset();return new Date(d.getTime()-off*60000).toISOString().slice(0,10)}
@@ -598,10 +535,11 @@ function populateCommonSelects(){
 function draw(id,config){if(!window.Chart)return;window.__charts=window.__charts||{};if(window.__charts[id])window.__charts[id].destroy();window.__charts[id]=new Chart(document.getElementById(id),config)}
 
 function renderTop(){populateMonthSelectors();const k=document.getElementById('topMonthSelect').value||monthNow();const tx=monthTx(k);const total=monthSpend(k);document.getElementById('topMonthTotal').textContent=fmt(total);document.getElementById('topMonthCount').textContent=tx.length+' transactions';document.getElementById('topMonthAvg').textContent=tx.length?'avg '+fmt(total/Math.max(1,new Set(tx.map(e=>e.date)).size)):'—';document.getElementById('navEntryCount').textContent=DATA.entries.length}
+function dashboardCategoryTotals(tx){const cats={};tx.filter(e=>e.type==='expense').forEach(e=>{const c=['Breakfast','Lunch','Snacks','Dinner'].includes(e.category)?'Food':e.category;cats[c]=(cats[c]||0)+Number(e.amount||0)});return cats}
 function renderDashboard(){
   renderTop();const k=document.getElementById('dashMonthSelect').value||monthNow();const tx=monthTx(k),income=monthIncome(k),expense=monthSpend(k),saving=monthSaving(k),net=income-expense-saving;
   document.getElementById('statIncome').textContent=fmt(income);document.getElementById('statExpense').textContent=fmt(expense);document.getElementById('statSavings').textContent=fmt(saving);document.getElementById('statNet').textContent=fmt(net);document.getElementById('statNet').className='v '+(net>=0?'positive':'negative');document.getElementById('statSavingsRate').textContent=income?(saving/income*100).toFixed(1)+'%':'0%';
-  const cats={};tx.filter(e=>e.type==='expense').forEach(e=>cats[e.category]=(cats[e.category]||0)+Number(e.amount));const top=Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];document.getElementById('statTopCat').textContent=top?top[0]:'—';document.getElementById('statTopCatAmt').textContent=top?fmt(top[1]):'—';document.getElementById('statDailyAvg').textContent=fmt(expense/Math.max(1,daysInMonth(k)));document.getElementById('statEntryCount').textContent=tx.length+' transactions';
+  const cats=dashboardCategoryTotals(tx);const top=Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];document.getElementById('statTopCat').textContent=top?top[0]:'—';document.getElementById('statTopCatAmt').textContent=top?fmt(top[1]):'—';document.getElementById('statDailyAvg').textContent=fmt(expense/Math.max(1,daysInMonth(k)));document.getElementById('statEntryCount').textContent=tx.length+' transactions';
   const bt=budgetTotal(k);const bu=bt?Math.round((expense/bt)*100):null;document.getElementById('statBudgetUsed').textContent=bu===null?'—':bu+'%';document.getElementById('statBudgetNote').textContent=bt?fmt(expense)+' of '+fmt(bt):'Set category budgets to track this.';
   const days=Array.from({length:daysInMonth(k)},(_,i)=>i+1);const dailyIncome=days.map(d=>tx.filter(e=>Number(e.date.slice(8,10))===d&&(e.type==='income'||e.type==='refund')).reduce((s,e)=>s+Number(e.amount||0),0));const dailyExpense=days.map(d=>tx.filter(e=>Number(e.date.slice(8,10))===d&&e.type==='expense').reduce((s,e)=>s+Number(e.amount||0),0));const dailySaving=days.map(d=>tx.filter(e=>Number(e.date.slice(8,10))===d&&e.type==='saving').reduce((s,e)=>s+Number(e.amount||0),0));draw('chartDaily',{type:'line',data:{labels:days,datasets:[{label:'Income',data:dailyIncome,tension:.25},{label:'Expenses',data:dailyExpense,tension:.25},{label:'Savings',data:dailySaving,tension:.25}]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true,ticks:{callback:v=>'₹'+Number(v).toLocaleString('en-IN')}}}}});
   const chartCats=Object.entries(cats).sort((a,b)=>b[1]-a[1]);const chartLabels=chartCats.map(x=>x[0]),chartVals=chartCats.map(x=>x[1]);draw('chartCategoryPie',{type:'doughnut',data:{labels:chartLabels,datasets:[{data:chartVals}]},options:{plugins:{legend:{position:'bottom'}}}});
@@ -704,7 +642,7 @@ document.getElementById('entryType').addEventListener('change',toggleTransferFie
 document.getElementById('accountOpening').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addAccount()}});document.getElementById('addAccountBtn').addEventListener('click',addAccount);document.getElementById('addPaymentBtn').addEventListener('click',addPayment);
 document.getElementById('budgetViewMonth').addEventListener('change',renderBudgets);document.getElementById('saveBudgetBtn').addEventListener('click',saveBudget);document.getElementById('addGoalBtn').addEventListener('click',addGoal);document.getElementById('saveRecurringBtn').addEventListener('click',saveRecurring);document.getElementById('recStart').value=todayISO();
 document.getElementById('yearSelect').addEventListener('change',renderYearly);document.getElementById('addInvestmentBtn').addEventListener('click',addInvestment);document.getElementById('refreshReportsBtn').addEventListener('click',renderReports);document.getElementById('exportJsonBtn').addEventListener('click',exportJson);document.getElementById('exportCsvBtn').addEventListener('click',exportCsv);document.getElementById('restoreMergeBtn').addEventListener('click',()=>restoreData('merge'));document.getElementById('restoreReplaceBtn').addEventListener('click',()=>restoreData('replace'));document.getElementById('pasteImportBtn').addEventListener('click',parsePasted);document.getElementById('addCategoryBtn').addEventListener('click',addCategory);
-document.getElementById('loadDemoBtn')?.addEventListener('click',()=>{if(!confirm('Load demo transactions into this browser? Your existing data will be kept and demo rows will be added.'))return;const demo=SEED_ENTRIES.map(e=>normalizeEntry({date:e.date,category:e.category,amount:e.amount}));DATA.entries=[...DATA.entries,...demo];saveData(DATA);showToast('Demo data added')});
+document.getElementById('loadDemoBtn')?.addEventListener('click',()=>{showToast('Demo data is not included in the public build')});
 document.getElementById('wipeAllBtn').addEventListener('click',()=>{if(!confirm('Erase every transaction, budget, recurring item and goal from this browser?'))return;localStorage.removeItem(STORAGE_KEY);localStorage.removeItem(STORAGE_KEY+'_lastSaved');DATA={schemaVersion:SCHEMA_VERSION,entries:[],categories:DEFAULT_CATEGORIES.slice(),accounts:deepClone(DEFAULT_ACCOUNTS),paymentMethods:DEFAULT_PAYMENTS.slice(),budgets:[],recurring:[],goals:[],investments:[]};saveData(DATA);resetEntryForm();showToast('All local data erased')});
 document.getElementById('gridPromptToggle').addEventListener('click',()=>{gridPrompt=!gridPrompt;document.getElementById('gridPromptToggle').textContent=gridPrompt?'On':'Off'});document.getElementById('saveGridCommentBtn').addEventListener('click',()=>{if(!selectedGridCell)return;const e=DATA.entries.find(x=>x.date===selectedGridCell.date&&x.category===selectedGridCell.category&&x.type===selectedGridCell.type);if(e){e.note=document.getElementById('gridCellComment').value.trim();saveData(DATA);showToast('Comment saved');const inp=[...document.querySelectorAll('.grid-cell')].find(x=>x.dataset.date===selectedGridCell.date&&x.dataset.cat===selectedGridCell.category&&x.dataset.type===selectedGridCell.type);if(inp)selectGridCell(inp)}else showToast('Enter an amount first.')});document.getElementById('clearGridCommentBtn').addEventListener('click',()=>{document.getElementById('gridCellComment').value='';if(selectedGridCell){const e=DATA.entries.find(x=>x.date===selectedGridCell.date&&x.category===selectedGridCell.category&&x.type===selectedGridCell.type);if(e){e.note='';saveData(DATA);const inp=[...document.querySelectorAll('.grid-cell')].find(x=>x.dataset.date===selectedGridCell.date&&x.dataset.cat===selectedGridCell.category&&x.dataset.type===selectedGridCell.type);if(inp)selectGridCell(inp)}}});document.getElementById('saveGridFormulaBtn').addEventListener('click',applyGridFormula);document.getElementById('gridFormulaBar').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();applyGridFormula()}});
 document.getElementById('gridAddCategoryBtn').addEventListener('click',()=>{const n=prompt('New category');if(n&&n.trim()){if(DATA.categories.includes(n.trim())){showToast('Already exists.');return}DATA.categories.push(n.trim());saveData(DATA);switchView('grid')}});
