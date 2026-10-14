@@ -692,7 +692,7 @@ function renderCurrent(){populateCommonSelects();populateMonthSelectors();render
 const DRIVE_MODE_KEY='ledger_storage_mode_v1', DRIVE_CLIENT_KEY='ledger_google_client_id_v1', DRIVE_FILE_KEY='ledger_drive_file_id_v1', DRIVE_BASE_KEY='ledger_drive_base_v1';
 const DRIVE_FILE_NAME='Ledger data - Ledger.json';
 // Site owner: optionally set your public OAuth Web Client ID here before publishing. Never put a client secret here.
-const GOOGLE_CLIENT_ID_DEFAULT='';
+const GOOGLE_CLIENT_ID_DEFAULT='6339765712-fk9agqgp4l3cc2r6ehg1ihadva2aj059.apps.googleusercontent.com';
 let driveAccessToken='', driveFileId=localStorage.getItem(DRIVE_FILE_KEY)||'', driveEtag='', drivePendingRemote=null, drivePendingRevision='', driveSyncTimer=null, driveBusy=false, driveTokenClient=null;
 const driveStatusEl=()=>document.getElementById('driveStatus');
 function setDriveStatus(msg){const el=driveStatusEl();if(el)el.textContent=msg;}
