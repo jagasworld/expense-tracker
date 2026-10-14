@@ -1,47 +1,45 @@
 # Ledger — Personal Finance Tracker
 
-Ledger is an offline-first personal finance PWA designed around a fast spreadsheet workflow. It keeps the original Quick Entry grid, but now adds spreadsheet formulas, comments, income/expense/transfer tracking, accounts, payment methods, budgets, recurring transactions, reports, yearly analysis, goals, investments, receipts, and JSON/CSV backup.
+Ledger is an offline-first personal finance PWA designed around a spreadsheet workflow. It includes Quick Entry formulas and comments, income/expense/savings tracking, accounts, budgets, recurring transactions, reports, yearly analysis, goals, investments, receipt attachments, and JSON/CSV backup.
+
+## Storage modes
+
+- **Local browser storage (default):** works offline and requires no account. Data stays in that browser profile. Clearing browser storage can remove it, so use JSON backups.
+- **Google Drive sync (optional):** stores one `Ledger data - Ledger.json` file in each user's own Google Drive. The app requests the Google Drive `drive.file` scope and only accesses the file created for Ledger. Local browser data is retained as a cache; connecting to an existing Drive file on a new device offers a choice to merge the browser's data or use the Drive copy.
+- Independent record changes are merged by ID/key. If the same record is changed differently on two devices, Ledger asks whether to keep this device's version or the Drive version. Offline edits remain local until a sync can run. Sync when opening/returning to the app or use **Sync now**; it is not a real-time collaborative database.
+- Google access tokens are kept in memory and are not written to localStorage. The OAuth Client ID is saved in that browser's settings; it is not a secret. Never put a client secret in this static app.
+
+## Configure Google Drive
+
+The site owner must configure OAuth before users can connect Drive:
+
+1. Open [Google Cloud Console](https://console.cloud.google.com/), create/select a project, and enable **Google Drive API**.
+2. Configure the OAuth consent screen. During development, add the Google accounts that will test the app. For a public audience, configure/publish the consent screen according to Google's current requirements.
+3. Create an **OAuth client ID → Web application**.
+4. Add the exact GitHub Pages origin under **Authorized JavaScript origins**, for example `https://YOUR-USERNAME.github.io`. The origin has no repository path. If using a custom domain, add that origin too.
+5. Before publishing, optionally set `GOOGLE_CLIENT_ID_DEFAULT` in `index.html` to your public OAuth Web Client ID so visitors do not have to enter it themselves. Alternatively, enter the ID in the settings field for local testing. In Ledger, open **Data & Settings → Storage & Google Drive sync**, choose **Google Drive sync**, then click **Connect Google Drive** and approve access.
+6. On the first device, if there is no Ledger file in Drive, the app creates it from that browser's current data. On another device, choose either **Merge this browser into Drive** or **Use Drive copy on this device** when prompted.
+
+A GitHub Pages URL alone cannot create the OAuth project or authorize access to a user's Drive. Each user must consent with their own Google account. Google may show an unverified-app warning until the OAuth consent screen is configured and published appropriately.
 
 ## Main features
 
-- **Spreadsheet formulas:** type `=200+300+600` in the Quick Entry grid or amount fields and press Enter to save `1100`. The formula is retained with the transaction and is shown in a spreadsheet-style fx formula bar whenever you select the Quick Entry cell.
-- **Comments:** every transaction can have a comment; Quick Entry cells have a dedicated comment box and optional comment prompt.
-- **Transactions:** expense, saving/investment, income, transfer, and refund with category, account, payment method, merchant/payee, tags, recurring source, and optional receipt image.
-- **Accounts:** simple Cash / Bank / Credit Card / Wallet / Investment / Other accounts with balances and opening balances.
-- **Budgets:** monthly category budgets with progress and over-budget warnings.
-- **Recurring:** monthly recurring income/expenses with one-click generation of due items.
-- **Reports:** date-range category, merchant, payment-method, and monthly comparisons.
-- **Yearly Analysis:** monthly income, expenses, net savings, and category breakdown.
-- **Goals:** savings targets and progress.
-- **Investments:** invested value, current value, gain/loss, and return percentage.
-- **Quick actions:** duplicate, split, delete with undo, category reordering, and CSV-safe export.
-- **Import/restore:** older 3-column spreadsheet imports are still supported, plus richer tab-separated imports.
-- **PWA/offline:** installable from GitHub Pages; data is stored locally in the browser.
-
-## Data and privacy
-
-The app stores its data locally in the browser. No account or server is required. JSON backup is recommended before clearing browser data or moving to a different device. Receipts are stored locally inside the backup data, so keep backups private.
+- **Spreadsheet formulas:** type `=200+300+600` in Quick Entry or amount fields; the amount evaluates to `1100` and the formula remains visible in the fx bar.
+- **Comments:** notes on transactions and Quick Entry cells.
+- **Transactions:** expense, saving/investment, income, transfer, and refund with category, account, payment method, merchant, tags, recurring source, and optional receipt image.
+- **Budgets, recurring items, reports, yearly analysis, goals, and investments.**
+- **Import/restore:** expense-grid copy/paste or CSV import, tab-separated row import, JSON backup/restore, and CSV export.
+- **Dashboard Food grouping:** Breakfast, Lunch, Snacks, and Dinner are grouped under Food in category analytics.
+- **PWA/offline:** installable from GitHub Pages. Local mode works offline; cloud sync requires internet.
 
 ## GitHub Pages
 
-1. Create a GitHub repository.
-2. Upload the contents of this folder, preserving the `icons/` and `store-assets/` folders.
-3. Enable **Settings → Pages → Deploy from a branch → main / root**.
-4. Open the generated `github.io` URL.
+1. Upload the contents of this folder to the repository root, preserving the `icons/` folder.
+2. Enable **Settings → Pages → Deploy from a branch → main / root**.
+3. Open the published URL and configure Google OAuth if you want Drive mode.
 
-The app uses relative paths, so it works from a repository sub-path as well as a root domain.
+The app uses relative paths and works from a repository sub-path. The service worker cache is versioned; after publishing, reload the site if an older build is cached.
 
-## Existing data migration
+## Privacy notes
 
-The upgraded app uses a v3 local data model with date-driven month navigation. If the browser already contains Ledger v1 data under `ledger_expense_data_v1`, the first load migrates those transactions into the v2 model automatically. Existing entries remain expenses and are assigned to the default Cash account until you edit them.
-
-## Backup format
-
-JSON backups include transactions, formulas, comments, receipt attachments, categories, accounts, payment methods, budgets, recurring rules, goals, and investments. CSV export contains the transaction ledger in a spreadsheet-friendly format.
-
-- **Savings / Investments:** Mutual Fund, Equity, Gold Chit, or Savings can be entered as a separate Saving / Investment type; they are excluded from expense totals but reduce remaining cash flow.
-- **Quick Entry modes:** Expense, Saving / Investment, and Income can each be entered with spreadsheet formulas and comments.
-
-
-### Month navigation
-The dashboard, Quick Entry, and transaction filters expose the current month plus a 36-month history and 36-month planning window. Existing transaction/budget/recurring months outside that window remain available too.
+Local mode stores data in the browser. Drive mode transfers ledger data only after the user explicitly connects Google Drive and grants permission. The file is stored in that user's Drive; other Ledger users do not share the file. Anyone who can access that Google account or its file may be able to access the ledger. Keep backups private, especially if they include receipt images.
