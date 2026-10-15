@@ -94,6 +94,15 @@
     display:flex; justify-content:space-between;
   }
 
+  /* Prominent Google Drive entry point on the first page */
+  .drive-promo{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 20px;padding:17px 20px;border:1px solid #c8dedb;border-radius:14px;background:linear-gradient(110deg,#eef8f6,#f8fbfa)}
+  .drive-promo-copy{display:flex;align-items:flex-start;gap:13px;min-width:0}
+  .drive-promo-icon{display:flex;align-items:center;justify-content:center;flex:0 0 42px;width:42px;height:42px;border-radius:12px;background:#d7eeea;color:#0e4a47;font-size:22px;font-weight:700}
+  .drive-promo h3{margin:0 0 4px;font-size:15px;color:#0e4a47}
+  .drive-promo p{margin:0;color:#536a68;font-size:12.5px;line-height:1.5}
+  .drive-promo .btn-primary{white-space:nowrap;flex-shrink:0}
+  @media(max-width:620px){.drive-promo{align-items:stretch;flex-direction:column;padding:15px}.drive-promo .btn-primary{width:100%}}
+
   /* ===== Nav tabs ===== */
   .tabs{
     display:flex; gap:4px; padding:0 32px; background:var(--card); border-bottom:1px solid var(--line);
@@ -307,6 +316,10 @@
 <section class="view active" id="view-dashboard">
   <h2 class="section-title">Monthly dashboard</h2>
   <p class="section-sub">Track money in, money out, budgets, and what's coming next.</p>
+  <div class="drive-promo" id="dashboardDrivePromo">
+    <div class="drive-promo-copy"><div class="drive-promo-icon" aria-hidden="true">☁</div><div><h3>Use Ledger across your devices</h3><p>Connect Google Drive to keep your private Ledger file available on your other devices. Your data stays local until you choose to connect.</p></div></div>
+    <button class="btn-primary" id="dashboardConnectDriveBtn">Connect Google Drive</button>
+  </div>
   <div class="toolbar" style="margin-bottom:16px"><div class="toolbar-left"><div class="form-field"><label>Month</label><select id="dashMonthSelect"></select></div><button class="btn-primary" id="addEntryQuickBtn">+ Add transaction</button></div><div class="toolbar-right"><button class="btn-secondary" id="runRecurringBtn">Generate due recurring</button></div></div>
   <div class="hero-strip">
     <div class="mini-stat"><div class="k">Income</div><div class="v positive" id="statIncome">₹0</div></div>
@@ -692,7 +705,7 @@ function renderCurrent(){populateCommonSelects();populateMonthSelectors();render
 const DRIVE_MODE_KEY='ledger_storage_mode_v1', DRIVE_CLIENT_KEY='ledger_google_client_id_v1', DRIVE_FILE_KEY='ledger_drive_file_id_v1', DRIVE_BASE_KEY='ledger_drive_base_v1';
 const DRIVE_FILE_NAME='Ledger data - Ledger.json';
 // Site owner: optionally set your public OAuth Web Client ID here before publishing. Never put a client secret here.
-const GOOGLE_CLIENT_ID_DEFAULT='6339765712-fk9agqgp4l3cc2r6ehg1ihadva2aj059.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID_DEFAULT='';
 let driveAccessToken='', driveFileId=localStorage.getItem(DRIVE_FILE_KEY)||'', driveEtag='', drivePendingRemote=null, drivePendingRevision='', driveSyncTimer=null, driveBusy=false, driveTokenClient=null;
 const driveStatusEl=()=>document.getElementById('driveStatus');
 function setDriveStatus(msg){const el=driveStatusEl();if(el)el.textContent=msg;}
@@ -723,7 +736,7 @@ document.getElementById('topMonthSelect').addEventListener('change',()=>{documen
 document.getElementById('entryType').addEventListener('change',toggleTransferFields);document.getElementById('saveEntryBtn').addEventListener('click',saveEntry);document.getElementById('cancelEditBtn').addEventListener('click',resetEntryForm);['filterMonth','filterCategory','filterAccount','filterType'].forEach(id=>document.getElementById(id).addEventListener('change',renderEntries));document.getElementById('filterSearch').addEventListener('input',renderEntries);
 document.getElementById('accountOpening').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addAccount()}});document.getElementById('addAccountBtn').addEventListener('click',addAccount);document.getElementById('addPaymentBtn').addEventListener('click',addPayment);
 document.getElementById('budgetViewMonth').addEventListener('change',renderBudgets);document.getElementById('saveBudgetBtn').addEventListener('click',saveBudget);document.getElementById('addGoalBtn').addEventListener('click',addGoal);document.getElementById('saveRecurringBtn').addEventListener('click',saveRecurring);document.getElementById('recStart').value=todayISO();
-document.getElementById('storageMode').addEventListener('change',()=>{const v=document.getElementById('storageMode').value;localStorage.setItem(DRIVE_MODE_KEY,v);setDriveStatus(v==='drive'?'Google Drive selected. Connect to sign in and sync.':'Local browser storage is active. Cloud data is not deleted.');});document.getElementById('connectDriveBtn').addEventListener('click',connectDrive);document.getElementById('syncDriveBtn').addEventListener('click',syncDriveNow);document.getElementById('disconnectDriveBtn').addEventListener('click',disconnectDrive);document.getElementById('driveMergeLocalBtn').addEventListener('click',mergeLocalIntoDrive);document.getElementById('driveUseRemoteBtn').addEventListener('click',useDriveCopy);
+document.getElementById('dashboardConnectDriveBtn').addEventListener('click',()=>{const savedClient=(localStorage.getItem(DRIVE_CLIENT_KEY)||document.getElementById('googleClientId').value||GOOGLE_CLIENT_ID_DEFAULT).trim();if(savedClient){document.getElementById('storageMode').value='drive';localStorage.setItem(DRIVE_MODE_KEY,'drive');connectDrive();}else{switchView('data');document.getElementById('driveStorageCard').scrollIntoView({behavior:'smooth',block:'start'});document.getElementById('googleClientId').focus();setDriveStatus('Enter the site owner’s Google OAuth Web Client ID, then click Connect Google Drive.');}});document.getElementById('storageMode').addEventListener('change',()=>{const v=document.getElementById('storageMode').value;localStorage.setItem(DRIVE_MODE_KEY,v);setDriveStatus(v==='drive'?'Google Drive selected. Connect to sign in and sync.':'Local browser storage is active. Cloud data is not deleted.');});document.getElementById('connectDriveBtn').addEventListener('click',connectDrive);document.getElementById('syncDriveBtn').addEventListener('click',syncDriveNow);document.getElementById('disconnectDriveBtn').addEventListener('click',disconnectDrive);document.getElementById('driveMergeLocalBtn').addEventListener('click',mergeLocalIntoDrive);document.getElementById('driveUseRemoteBtn').addEventListener('click',useDriveCopy);
 document.getElementById('yearSelect').addEventListener('change',renderYearly);document.getElementById('addInvestmentBtn').addEventListener('click',addInvestment);document.getElementById('refreshReportsBtn').addEventListener('click',renderReports);document.getElementById('exportJsonBtn').addEventListener('click',exportJson);document.getElementById('exportCsvBtn').addEventListener('click',exportCsv);document.getElementById('restoreMergeBtn').addEventListener('click',()=>restoreData('merge'));document.getElementById('restoreReplaceBtn').addEventListener('click',()=>restoreData('replace'));document.getElementById('pasteImportBtn').addEventListener('click',parsePasted);document.getElementById('addCategoryBtn').addEventListener('click',addCategory);document.getElementById('importExpenseGridBtn').addEventListener('click',()=>{const r=importExpenseGridAny(document.getElementById('expenseGridImportArea').value);document.getElementById('expenseGridImportResult').textContent=`Imported ${r.made} expense cells; skipped ${r.skipped}.`+(r.errors.length?` ${r.errors.slice(0,3).join(' · ')}`:'');showToast(r.made?`Imported ${r.made} expense cells`:'Nothing imported');});document.getElementById('expenseGridCsvFile').addEventListener('change',loadExpenseGridFile);document.getElementById('downloadExpenseTemplateBtn').addEventListener('click',downloadExpenseTemplate);
 document.getElementById('loadDemoBtn')?.addEventListener('click',()=>{showToast('Demo data is not included in the public build')});
 document.getElementById('wipeAllBtn').addEventListener('click',()=>{if(!confirm('Erase every transaction, budget, recurring item and goal from this browser?'))return;localStorage.removeItem(STORAGE_KEY);localStorage.removeItem(STORAGE_KEY+'_lastSaved');DATA={schemaVersion:SCHEMA_VERSION,entries:[],categories:DEFAULT_CATEGORIES.slice(),accounts:deepClone(DEFAULT_ACCOUNTS),paymentMethods:DEFAULT_PAYMENTS.slice(),budgets:[],recurring:[],goals:[],investments:[]};saveData(DATA);resetEntryForm();showToast('All local data erased')});
