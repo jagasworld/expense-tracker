@@ -1,4 +1,4 @@
-const CACHE_NAME = "ledger-cache-v10";
+const CACHE_NAME = "ledger-cache-v11";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
